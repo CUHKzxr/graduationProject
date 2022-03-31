@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.RsiDataMapper">
+    <resultMap id="ipv4" type="com.example.demo.bean.RsiDataWithIpv4">
+        <id property="timestamp" column="timestamp_" jdbcType="CHAR" />
+        <id property="provider" column="provider" jdbcType="VARCHAR"/>
+        <id property="name_" column="name_" jdbcType="CHAR"/>
+        <id property="identification" column="identification" jdbcType="VARCHAR"/>
+        <id property="index" column="index_" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv4Udp" column="query_latency_ipv4_udp" jdbcType="INTEGER" />
+        <result property="queryLatencyIpv4Tcp" column="query_latency_ipv4_tcp" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv6Udp" column="query_latency_ipv6_udp" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv6Tcp" column="query_latency_ipv6_tcp" jdbcType="INTEGER"/>
+        <result property="pathCountIpv4" column="path_count_ipv4" jdbcType="INTEGER"/>
+        <result property="pathCountIpv6" column="path_count_ipv6" jdbcType="INTEGER"/>
+        <result property="status" column="status_" jdbcType="VARCHAR"/>
+        <result property="sourceIpIpv4" column="source_ip_ipv4" jdbcType="INTEGER"/>
+        <result property="sourceIpIpv6" column="source_ip_ipv6" jdbcType="BINARY"/>
+        <result property="referLatencyIpv4_0" column="refer_latency_ipv4_0" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv4_1" column="refer_latency_ipv4_2" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv4_2" column="refer_latency_ipv4_3" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_0" column="refer_latency_ipv6_0" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_1" column="refer_latency_ipv6_2" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_2" column="refer_latency_ipv6_3" jdbcType="INTEGER"/>
+        <result property="publicationLatency" column="publication_latency" jdbcType="INTEGER"/>
+        <result property="correctness" column="correctness" jdbcType="BOOLEAN"/>
+        <result property="ipv4RouteAddress" column="address" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="queryDetailIpv4" resultMap="ipv4">
+        SELECT
+            a.timestamp_ AS timestamp_,
+            a.provider AS provider,
+            a.name_ AS name_,
+            a.identification AS identification,
+            a.query_latency_ipv4_udp AS query_latency_ipv4_udp,
+            a.query_latency_ipv4_tcp AS query_latency_ipv4_tcp,
+            a.query_latency_ipv6_udp AS query_latency_ipv6_udp,
+            a.query_latency_ipv6_tcp AS query_latency_ipv6_tcp,
+            a.path_count_ipv4 AS path_count_ipv4,
+            a.path_count_ipv6 AS path_count_ipv6,
+            a.status_ AS status_,
+            a.source_ip_ipv4 AS source_ip_ipv4,
+            a.source_ip_ipv6 AS source_ip_ipv6,
+            a.correctness AS correctness,
+            a.publication_latency AS publication_latency,
+            b.index_ AS index_,
+            b.address AS address
+        FROM rsi_data a LEFT JOIN rsi_route_data_ipv4 b ON
+                a.timestamp_ = b.timestamp_
+                AND a.provider = b.provider
+                AND a.name_ = b.name_
+                AND a.identification = b.identification
+        ${ew.customSqlSegment}
+        ORDER BY timestamp_, provider, name_, identification, index_
+    </select>
+
+    <resultMap id="ipv6" type="com.example.demo.bean.RsiDataWithIpv6">
+        <id property="timestamp" column="timestamp_" jdbcType="CHAR" />
+        <id property="provider" column="provider" jdbcType="VARCHAR"/>
+        <id property="name_" column="name_" jdbcType="CHAR"/>
+        <id property="identification" column="identification" jdbcType="VARCHAR"/>
+        <id property="index" column="index_" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv4Udp" column="query_latency_ipv4_udp" jdbcType="INTEGER" />
+        <result property="queryLatencyIpv4Tcp" column="query_latency_ipv4_tcp" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv6Udp" column="query_latency_ipv6_udp" jdbcType="INTEGER"/>
+        <result property="queryLatencyIpv6Tcp" column="query_latency_ipv6_tcp" jdbcType="INTEGER"/>
+        <result property="pathCountIpv4" column="path_count_ipv4" jdbcType="INTEGER"/>
+        <result property="pathCountIpv6" column="path_count_ipv6" jdbcType="INTEGER"/>
+        <result property="status" column="status_" jdbcType="VARCHAR"/>
+        <result property="sourceIpIpv4" column="source_ip_ipv4" jdbcType="INTEGER"/>
+        <result property="sourceIpIpv6" column="source_ip_ipv6" jdbcType="BINARY"/>
+        <result property="referLatencyIpv4_0" column="refer_latency_ipv4_0" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv4_1" column="refer_latency_ipv4_2" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv4_2" column="refer_latency_ipv4_3" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_0" column="refer_latency_ipv6_0" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_1" column="refer_latency_ipv6_2" jdbcType="INTEGER"/>
+        <result property="referLatencyIpv6_2" column="refer_latency_ipv6_3" jdbcType="INTEGER"/>
+        <result property="publicationLatency" column="publication_latency" jdbcType="INTEGER"/>
+        <result property="correctness" column="correctness" jdbcType="BOOLEAN"/>
+        <result property="ipv6RouteAddress" column="address" jdbcType="BINARY"/>
+    </resultMap>
+
+    <select id="queryDetailIpv6" resultMap="ipv6">
+        SELECT
+        a.timestamp_ AS timestamp_,
+        a.provider AS provider,
+        a.name_ AS name_,
+        a.identification AS identification,
+        a.query_latency_ipv4_udp AS query_latency_ipv4_udp,
+        a.query_latency_ipv4_tcp AS query_latency_ipv4_tcp,
+        a.query_latency_ipv6_udp AS query_latency_ipv6_udp,
+        a.query_latency_ipv6_tcp AS query_latency_ipv6_tcp,
+        a.path_count_ipv4 AS path_count_ipv4,
+        a.path_count_ipv6 AS path_count_ipv6,
+        a.status_ AS status_,
+        a.source_ip_ipv4 AS source_ip_ipv4,
+        a.source_ip_ipv6 AS source_ip_ipv6,
+        a.correctness AS correctness,
+        a.publication_latency AS publication_latency,
+        b.index_ AS index_,
+        b.address AS address
+        FROM rsi_data a LEFT JOIN rsi_route_data_ipv6 b ON
+        a.timestamp_ = b.timestamp_
+        AND a.provider = b.provider
+        AND a.name_ = b.name_
+        AND a.identification = b.identification
+        ${ew.customSqlSegment}
+        ORDER BY timestamp_, provider, name_, identification, index_
+    </select>
+</mapper>
