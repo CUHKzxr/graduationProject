@@ -58,7 +58,7 @@
     <div class="container">
       
     </div>
-      <el-table :data="tabledata" style="width:100%" height="650" width="150%">
+      <el-table :data="tabledata" height="650" width="150%">
         <el-table-column type="expand">
           
           <template slot-scope="props">
@@ -572,6 +572,7 @@ export default {
         this.getLatestNdata(
           this.chartdata.length === this.latestN ? 1 : this.latestN
         );
+        this.getAlternativeProviders();
       }, this.loopTime);
       this.getAlternativeProviders();
     },

@@ -4,7 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Demo {
+public class TimeUtils {
 
     private static String changeTimestamp(String time,int num) {
         int year = Integer.parseInt(time.substring(0, 4));
