@@ -1,4 +1,4 @@
-package com.example.demo.utils.report;
+package com.example.demo.report;
 
 public class PercentageResult {
     private static final double rsiAvailabilityThreshold = 0.96;

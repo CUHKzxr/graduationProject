@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.MeasuringPointsDataMapper">
+    <resultMap id="measuringPoints" type="com.example.demo.bean.MeasuringPointsData">
+        <id property="identification" column="identification" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="INTEGER" />
+        <result property="location" column="location" jdbcType="VARCHAR"/>
+        <result property="ipv4Address" column="ipv4_address" jdbcType="INTEGER"/>
+        <result property="ipv6Address" column="ipv6_address" jdbcType="BINARY"/>
+        <result property="status" column="status_" jdbcType="VARCHAR"/>
+        <result property="effective" column="efficient" jdbcType="BOOLEAN" />
+        <result property="startTimestamp" column="start_timestamp" jdbcType="VARCHAR"/>
+        <result property="endTimestamp" column="end_timestamp" jdbcType="VARCHAR"/>
+        <result property="text" column="text" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="queryMeasuringPointsData" resultMap="measuringPoints">
+        SELECT
+        a.identification as identification,
+        b.id as id,
+        a.location as location,
+        a.ipv4_address as ipv4_address,
+        a.ipv6_address as ipv6_address,
+        a.status_ as status_,
+        b.efficient as efficient,
+        b.start_timestamp as start_timestamp,
+        b.end_timestamp as end_timestamp,
+        b.text as text
+        FROM measuring_points a LEFT JOIN measuring_tasks b ON
+        a.identification = b.identification
+        ${ew.customSqlSegment}
+        ORDER BY identification,id
+    </select>
+
+
+</mapper>

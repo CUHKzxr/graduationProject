@@ -1,6 +1,9 @@
 <template>
   <div class="main1">
     <p class="title">RSi报告与RSS报告</p>
+    <div>
+      
+    </div>
     <div class="tableContainer">
       <div >
         <el-table :data="rsidata" :span-method="spanMethodRsi" 

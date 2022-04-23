@@ -1,4 +1,4 @@
-package com.example.demo.utils.report;
+package com.example.demo.report;
 
 public class SelectKth {
 
@@ -43,7 +43,6 @@ public class SelectKth {
             swap(list,leftBorder + n / 5, i + 2);
         }
 
-        //处理剩余元素
         int num = rightBorder - i + 1;
         if(num > 0)
         {
@@ -53,7 +52,8 @@ public class SelectKth {
         }
         n /= 5;
         if(n == leftBorder) return leftBorder;
-        return FindMid(list, leftBorder, leftBorder + n);
+        return BFPRT(list,leftBorder,leftBorder+n,n/2);
+        //return FindMid(list, leftBorder, leftBorder + n);
     }
     private static void InsertSort(int list[], int leftBorder, int rightBorder)
     {

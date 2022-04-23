@@ -35,6 +35,11 @@ export const routes = [
     name: 'report',
     component: () => import('../views/report.vue')
   },
+  {
+    path: '/measuringPoints',
+    name: 'measuringPoints',
+    component: () => import('../views/measuringPoints.vue')
+  },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

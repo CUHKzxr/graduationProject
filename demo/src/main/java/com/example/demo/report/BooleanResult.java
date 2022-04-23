@@ -1,4 +1,4 @@
-package com.example.demo.utils.report;
+package com.example.demo.report;
 
 public class BooleanResult {
     private final boolean value;

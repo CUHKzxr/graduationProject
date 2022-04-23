@@ -1,16 +1,14 @@
-package com.example.demo.utils.report;
+package com.example.demo.report;
 
 import com.example.demo.bean.RsiData;
-import org.apache.kafka.common.protocol.types.Field;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class ReportUtils {
     private static final int numberK = 8;
     private static final int INT_MAX=0x7fffffff;
 
-    public Map<String,BooleanResult>
+    //public Map<String,BooleanResult>
     /**
      *
      * @param dataList 应当仅包含同一根类型的数据

@@ -5,7 +5,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class TimeUtils {
+    public static final SimpleDateFormat dateFormat=new SimpleDateFormat("yyyy-MM-ddTHH:mm:ssZ");
 
+
+    public static String changeTimestamp2(String time,int num) throws ParseException {
+        Date date=dateFormat.parse(time);
+        Date rDate=new Date(date.getTime()+num);
+        return dateFormat.format(rDate);
+    }
     private static String changeTimestamp(String time,int num) {
         int year = Integer.parseInt(time.substring(0, 4));
         int month = Integer.parseInt(time.substring(5, 7));
@@ -67,4 +74,5 @@ public class TimeUtils {
         return formater.parse(str);
 
     }
+
 }
