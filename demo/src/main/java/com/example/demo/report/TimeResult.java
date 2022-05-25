@@ -7,15 +7,15 @@ public class TimeResult {
     public static final int rssResponseUdpThreshold = 150;
     public static final int rssResponseTcpThreshold = 300;
     public static final int rssPublicationLatencyThreshold = 2100000;
-    private final float value;
+    private final double value;
     private final int measurementsSize;
 
-    public TimeResult(float value, int measurementsSize) {
+    public TimeResult(double value, int measurementsSize) {
         this.value = value;
         this.measurementsSize = measurementsSize;
     }
 
-    public float getValue() {
+    public double getValue() {
         return value;
     }
 

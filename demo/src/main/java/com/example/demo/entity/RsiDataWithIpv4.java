@@ -1,4 +1,4 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 public class RsiDataWithIpv4 {
     //@TableId(value = "timestamp_")

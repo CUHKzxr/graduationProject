@@ -1,4 +1,4 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 public class MeasuringTask {
     private int id;

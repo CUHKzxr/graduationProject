@@ -1,7 +1,7 @@
 package com.example.demo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.example.demo.bean.RsiRouteDataIpv4;
+import com.example.demo.entity.RsiRouteDataIpv4;
 import org.springframework.stereotype.Component;
 
 @Component

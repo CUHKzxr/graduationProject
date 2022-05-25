@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.RsiDataMapper">
-    <resultMap id="ipv4" type="com.example.demo.bean.RsiDataWithIpv4">
+    <resultMap id="ipv4" type="com.example.demo.entity.RsiDataWithIpv4">
         <id property="timestamp" column="timestamp_" jdbcType="CHAR" />
         <id property="provider" column="provider" jdbcType="VARCHAR"/>
         <id property="name_" column="name_" jdbcType="CHAR"/>
@@ -55,7 +55,7 @@
         ORDER BY timestamp_, provider, name_, identification, index_
     </select>
 
-    <resultMap id="ipv6" type="com.example.demo.bean.RsiDataWithIpv6">
+    <resultMap id="ipv6" type="com.example.demo.entity.RsiDataWithIpv6">
         <id property="timestamp" column="timestamp_" jdbcType="CHAR" />
         <id property="provider" column="provider" jdbcType="VARCHAR"/>
         <id property="name_" column="name_" jdbcType="CHAR"/>

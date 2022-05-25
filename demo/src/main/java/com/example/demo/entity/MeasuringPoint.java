@@ -1,9 +1,13 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 
-public class MeasuringPoints {
+import java.util.List;
+
+@TableName(value = "measuring_points")
+public class MeasuringPoint {
     @TableId(value = "identification")
     private String identification;
     @TableField(value = "location")
@@ -12,6 +16,8 @@ public class MeasuringPoints {
     private int ipv4Address;
     @TableField(value = "ipv6_address")
     private byte[] ipv6Address;
+    @TableField(exist = false)
+    private List<MeasuringTask> tasks=null;
 
     /*
         normal:正常
@@ -20,18 +26,27 @@ public class MeasuringPoints {
         offline:离线（丢失三次数据）
         abandoned:已丢弃的节点
      */
-    @TableField(value = "status")
+    @TableField(value = "status_")
     private String status;
 
-    public MeasuringPoints() {
+    public MeasuringPoint() {
     }
 
-    public MeasuringPoints(String identification, String location, int ipv4Address, byte[] ipv6Address, String status) {
+    public MeasuringPoint(String identification, String location, int ipv4Address, byte[] ipv6Address, String status) {
         this.identification = identification;
         this.location = location;
         this.ipv4Address = ipv4Address;
         this.ipv6Address = ipv6Address;
         this.status = status;
+    }
+
+    public MeasuringPoint(String identification, String location, int ipv4Address, byte[] ipv6Address, String status , List<MeasuringTask> tasks) {
+        this.identification = identification;
+        this.location = location;
+        this.ipv4Address = ipv4Address;
+        this.ipv6Address = ipv6Address;
+        this.status = status;
+        this.tasks=tasks;
     }
 
     public String getIdentification() {
@@ -73,4 +88,14 @@ public class MeasuringPoints {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public List<MeasuringTask> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<MeasuringTask> tasks) {
+        this.tasks = tasks;
+    }
+
+
 }

@@ -1,4 +1,4 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -55,10 +55,14 @@ public class RsiData {
 
     }
 
+    public RsiData(char name_) {
+        this.name_ = name_;
+    }
+
     public RsiData(String timestamp, String provider, char name, String identification,
                    int[] queryLatency, int[] pathCount, String status,
                    int sourceIpv4, byte[] sourceIpv6, int[] referLatency,
-                   boolean correctness,int publicationLatency) {
+                   boolean correctness, int publicationLatency) {
         this.timestamp = timestamp;
         this.provider = provider;
         this.name_ = name;

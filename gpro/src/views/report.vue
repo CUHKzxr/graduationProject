@@ -2,16 +2,64 @@
   <div class="main1">
     <p class="title">RSi报告与RSS报告</p>
     <div>
-      
+      <el-form ref="form" :model="searchConditions" label-width="80px" style="border:solid">
+        <el-date-picker
+              v-model="searchConditions.timestamprange"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-ddTHH:mm:SSZ">
+        </el-date-picker>
+        
+        <el-button type="primary" @click="onSubmit">查找</el-button>
+      </el-form>
     </div>
+    <div>
+      <el-tabs value="latency" stretch:true>
+        <el-tab-pane label="延迟" name="latency">
+          <el-tabs value="latencyIpv4" stretch:true>
+            <el-tab-pane label="IPv4" name="latencyIpv4">
+              <div ref="latencyIpv4Chart" :style="{ width, height }"></div>
+            </el-tab-pane>
+            <el-tab-pane label="IPv6" name="latencyIpv6">
+              <div ref="latencyIpv6Chart" :style="{ width, height }"></div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-tab-pane>
+        <el-tab-pane label="可用性" name="avaliability">
+          <el-tabs value="availabilityIpv4" stretch:true>
+            <el-tab-pane label="IPv4" name="availabilityIpv4">
+              <div ref="availabilityIpv4Chart" :style="{ width, height }"></div>
+            </el-tab-pane>
+            <el-tab-pane label="IPv6" name="avaliabilityIpv6">
+              <div ref="availabilityIpv6Chart" :style="{ width, height }"></div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-tab-pane>
+        <el-tab-pane label="正确性" name="correctness">
+          <div ref="correctnessChart" :style="{ width, height }"></div>
+        </el-tab-pane>
+        <el-tab-pane label="根区发布延迟" name="publicationLatency">
+          <div ref="publicationLatencyChart" :style="{ width, height }"></div>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    
     <div class="tableContainer">
       <div >
-        <el-table :data="rsidata" :span-method="spanMethodRsi" 
+        <el-table :data="rsiTableData" :span-method="spanMethodRsi" 
         :cell-class-name="cellClassNameRsi" 
-        border=true style="width:1056px">
+        border:true style="width:1206px">
+          <el-table-column label="Time" width="150">
+            <template slot-scope="scope">
+              {{scope.row.time}}
+            </template>
+          </el-table-column>
           <el-table-column label="RSI" width="150">
             <template slot-scope="scope">
-              {{scope.row.type}}
+              {{scope.row.name}}
             </template>
           </el-table-column>
           <el-table-column label="Tansport" width="150">
@@ -48,10 +96,19 @@
           </el-table-column>
         </el-table>
         <br>
+        <el-pagination
+          @size-change="handleSizeChangeRsi" 
+          @current-change="handleCurrentChangeRsi" 
+          :page-size="paginationRsi.pageSize" 
+          :current-page="paginationRsi.currentPage"
+          :total="paginationRsi.total"
+          :page-sizes="[12, 20, 40, 120]"  
+          layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
         <br>
-        <el-table :data=rssdata :span-method="spanMethodRss" 
+        <el-table :data=rssTableData :span-method="spanMethodRss" 
         :cell-class-name="cellClassNameRss" style="width:1056px"
-        border=true >
+        border:true >
           <el-table-column label="Time" width="150">
             <template slot-scope="scope">
               {{scope.row.time}}
@@ -88,6 +145,16 @@
             </template>
           </el-table-column>
         </el-table>
+        <br>
+        <el-pagination
+          @size-change="handleSizeChangeRss" 
+          @current-change="handleCurrentChangeRss" 
+          :page-size="paginationRss.pageSize" 
+          :current-page="paginationRss.currentPage"
+          :total="paginationRss.total"
+          :page-sizes="[12, 20, 40, 120]"  
+          layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
       </div>
     </div>
     
@@ -97,8 +164,8 @@
 <script>
 import echarts from "echarts";
 import {
-  changeTimestamp
-} from "@/api/demochart";
+  getReport
+} from "@/api/report";
 import {
   parseIpv4String,
   parseIpv6String
@@ -111,88 +178,47 @@ export default {
     return {
       height: "",
       width: "",
-      rsidata:[{
-          type: "A",
-          transport: "ipv4-udp",
-          availability:">=96%",
-          responseLatency:"<=250ms",
-          correctness: "100%",
-          publicationLatency:">65min",
-          measurements:1000
-        },
-        {
-          type: "A",
-          transport: "ipv4-tcp",
-          availability:">=96%",
-          responseLatency:">500ms",
-          correctness: "<100%",
-          publicationLatency:">65min",
-          measurements:1000
-        },
-        {
-          type: "A",
-          transport: "ipv6-udp",
-          availability:">=96%",
-          responseLatency:"<=250ms",
-          correctness: "<100%",
-          publicationLatency:"<=65min",
-          measurements:1000
-        },
-        {
-          type: "A",
-          transport: "ipv6-tcp",
-          availability:"<96%",
-          responseLatency:"<=500ms",
-          correctness: "100%",
-          publicationLatency:"<=65min",
-          measurements:1000
-        },
-        
-      ],
-      rssdata: [{
-          time: "2022-3-27T",
-          transport: "ipv4-udp",
-          availability:1.0,
-          responseLatency:150,
-          correctness: 1.0,
-          publicationLatency:35,
-          measurements:1000
-        },
-        {
-          time: "2022-3-27T",
-          transport: "ipv4-tcp",
-          availability:0.99998,
-          responseLatency:550,
-          correctness: 1.0,
-          publicationLatency:34,
-          measurements:1000
-        },
-        {
-          time: "2022-3-27T",
-          transport: "ipv6-udp",
-          availability:0.99999,
-          responseLatency:299,
-          correctness: 0.99999,
-          publicationLatency:34,
-          measurements:1000
-        },
-        {
-          time: "2022-3-27T",
-          transport: "ipv6-tcp",
-          availability:1.0,
-          responseLatency:298,
-          correctness: 1.0,
-          publicationLatency:34,
-          measurements:1000
-        }
-      ],
+      searchConditions:{
+        timestamprange:[]
+      },
+      showConditions:{
+        isIndeterminate1:false,
+        isCheckAll1:false,
+        checkedNameList:[]
+      },
+      rsidata:[],
+      rssdata: [],
+      rsiTableData:[],
+      rssTableData:[],
+      latencyIpv4Chart:'',
+      latencyIpv6Chart:'',
+      availabilityIpv4Chart:'',
+      availabilityIpv6Chart:'',
+      correctnessChart:'',
+      publicationLatencyChart:'',
+      paginationRsi:{
+        pageSize:12,
+        currentPage:1,
+        total:0
+      },
+      paginationRss:{
+        pageSize:12,
+        currentPage:1,
+        total:0
+      },
+      testOption:{}
     };
   },
   mounted() {
     this.init();
-    //this.resize();
+    this.resize();
     this.$nextTick(() => {
-      
+      this.initEchart("latencyIpv4Chart");
+      this.initEchart("latencyIpv6Chart");
+      this.initEchart("availabilityIpv4Chart");
+      this.initEchart("availabilityIpv6Chart");
+      this.initEchart("correctnessChart");
+      this.initEchart("publicationLatencyChart");
       if (false&&!this.loopId ) {
         this.loop();
       }
@@ -207,12 +233,132 @@ export default {
       window.addEventListener("resize", () => {
         this.init();
         this.$nextTick(() => {
-          this.chart1.resize();
+          this.latencyIpv4Chart.resize();
+          this.latencyIpv6Chart.resize();
+          this.availabilityIpv4Chart.resize();
+          this.availabilityIpv6Chart.resize();
+          this.correctnessChart.resize();
+          this.publicationLatencyChart.resize();
         });
       });
     },
+    initEchart(chartName) {
+      this[chartName] = echarts.init(this.$refs[chartName]);
+    },
+    
+    async onSubmit(){
+      const resdata = await getReport({
+        data:this.searchConditions
+      });
+      this.rsidata=[];
+      this.rssdata=[];
+      for(let rsi of resdata.rsi){
+        let publicationLatency=rsi.publication_latency.value==1?"<=65min":">65min";
+        let correctness=rsi.correctness.value==1?"100%":"<100%";
+        this.rsidata.push({
+          time:rsi.time,
+          name:rsi.name,
+          transport: "ipv4-udp",
+          availability:rsi.ipv4_udp_availability.value==1?">=96%":"<96%",
+          responseLatency:rsi.ipv4_udp_latency.value==1?"<=250ms":">250ms",
+          correctness: correctness,
+          publicationLatency:publicationLatency,
+          measurements:rsi.ipv4_udp_availability.measurements
+        });
+        this.rsidata.push({
+          time:rsi.time,
+          name:rsi.name,
+          transport: "ipv4-tcp",
+          availability:rsi.ipv4_tcp_availability.value==1?">=96%":"<96%",
+          responseLatency:rsi.ipv4_tcp_latency.value==1?"<=500ms":">500ms",
+          correctness: correctness,
+          publicationLatency:publicationLatency,
+          measurements:rsi.ipv4_tcp_availability.measurements
+        });
+        this.rsidata.push({
+          time:rsi.time,
+          name:rsi.name,
+          transport: "ipv6-udp",
+          availability:rsi.ipv6_udp_availability.value==1?">=96%":"<96%",
+          responseLatency:rsi.ipv6_udp_latency.value==1?"<=250ms":">250ms",
+          correctness: correctness,
+          publicationLatency:publicationLatency,
+          measurements:rsi.ipv6_udp_availability.measurements
+        });
+        this.rsidata.push({
+          time:rsi.time,
+          name:rsi.name,
+          transport: "ipv6-tcp",
+          availability:rsi.ipv6_tcp_availability.value==1?">=96%":"<96%",
+          responseLatency:rsi.ipv6_tcp_latency.value==1?"<=500ms":">500ms",
+          correctness: correctness,
+          publicationLatency:publicationLatency,
+          measurements:rsi.ipv6_tcp_availability.measurements
+        });
+      }
+      //let time=this.searchConditions.timestamprange[0]+"--"+this.searchConditions.timestamprange[1];
+      for(let rss of resdata.rss){
+        this.rssdata.push({
+          time: rss.timestamp,
+          transport: "ipv4-udp",
+          availability:rss.availabilityIpv4Udp,
+          responseLatency:rss.latencyIpv4Udp,
+          correctness: rss.correctness,
+          publicationLatency:rss.publicationLatency,
+          measurements:rss.ipv4UdpAvailabilityMeasurements
+        });
+        this.rssdata.push({
+          time: rss.timestamp,
+          transport: "ipv4-tcp",
+          availability:rss.availabilityIpv4Tcp,
+          responseLatency:rss.latencyIpv4Tcp,
+          correctness: rss.correctness,
+          publicationLatency:rss.publicationLatency,
+          measurements:rss.ipv4UdpAvailabilityMeasurements
+        });
+        this.rssdata.push({
+          time: rss.timestamp,
+          transport: "ipv6-udp",
+          availability:rss.availabilityIpv6Udp,
+          responseLatency:rss.latencyIpv6Udp,
+          correctness: rss.correctness,
+          publicationLatency:rss.publicationLatency,
+          measurements:rss.ipv4UdpAvailabilityMeasurements
+        });
+        this.rssdata.push({
+          time: rss.timestamp,
+          transport: "ipv6-tcp",
+          availability:rss.availabilityIpv6Tcp,
+          responseLatency:rss.latencyIpv6Tcp,
+          correctness: rss.correctness,
+          publicationLatency:rss.publicationLatency,
+          measurements:rss.ipv4UdpAvailabilityMeasurements
+        });
+
+      }
+      this.setLatencyIpv4Chart(resdata.rss);
+      this.setLatencyIpv6Chart(resdata.rss);
+      this.setAvailabilityIpv4Chart(resdata.rss);
+      this.setAvailabilityIpv6Chart(resdata.rss);
+      this.setCorrectnessChart(resdata.rss);
+      this.setPublicationLatencyChart(resdata.rss)
+
+      this.paginationRsi.total=this.rsidata.length;
+      this.paginationRss.total=this.rssdata.length;
+      this.handleSizeChangeRsi(this.paginationRsi.pageSize);
+      this.handleSizeChangeRss(this.paginationRss.pageSize);
+    },
+    handleCheckedNameList(val){
+      this.showConditions.isCheckAll1=val.length===13;
+      this.showConditions.isIndeterminate1=this.showConditions.checkedNameList.length>0
+        &&this.showConditions.checkedNameList.length<13;
+    },
+    handleCheckAllChange1(val){
+      this.showConditions.checkedNameList=val?nameList:[];
+      this.showConditions.isIndeterminate1=false;
+    },
     spanMethodRsi({ row, column, rowIndex, columnIndex }) {
-      if(columnIndex == 0 || columnIndex ==4 || columnIndex ==5|| columnIndex ==6){
+      if(columnIndex ==0 || columnIndex == 1 || columnIndex ==5 || columnIndex ==6|| columnIndex ==7){
         if(rowIndex%4 == 0){
           return [4,1];
         }else{
@@ -224,7 +370,7 @@ export default {
       return this.spanMethodRsi({ row, column, rowIndex, columnIndex });
     },
     cellClassNameRsi({row, column, rowIndex, columnIndex}){
-      if(columnIndex == 2){
+      if(columnIndex == 3){
         if(this.rsidata[rowIndex].availability=='>=96%'){
           return 'row-true';
         }else if(this.rsidata[rowIndex].availability=='<96%'){
@@ -232,7 +378,7 @@ export default {
         }else{
           return '';
         }
-      }else if(columnIndex == 3){
+      }else if(columnIndex == 4){
         if(rowIndex %2 == 0){
           if(this.rsidata[rowIndex].responseLatency=='<=250ms'){
             return 'row-true';
@@ -250,7 +396,7 @@ export default {
             return '';
           }
         }
-      }else if(columnIndex == 4){
+      }else if(columnIndex == 5){
         if(this.rsidata[rowIndex].correctness=='100%'){
           return 'row-true';
         }else if(this.rsidata[rowIndex].correctness=='<100%'){
@@ -258,7 +404,7 @@ export default {
         }else{
           return '';
         }
-      }else if(columnIndex == 5){
+      }else if(columnIndex == 6){
         if(this.rsidata[rowIndex].publicationLatency=='<=65min'){
           return 'row-true';
         }else if(this.rsidata[rowIndex].publicationLatency=='>65min'){
@@ -313,18 +459,314 @@ export default {
         }
       }
     },
-
-    loop() {
-      this.loopId = setInterval(() => {
-        //方便浏览器调试的几个变量
-        //let test1 = this.chartdata;
-        //let test2 = this.timedata;
-        //let test3 = this.latestN;
-
-        
-      }, this.loopTime);
+    //currentPage starts at 1
+    getRsiTableData(pageSize, currentPage){
+      this.rsiTableData=this.rsidata.slice((currentPage-1)*pageSize,currentPage*pageSize);
     },
-  },
+    getRssTableData(pageSize, currentPage){
+      this.rssTableData=this.rssdata.slice((currentPage-1)*pageSize,currentPage*pageSize);
+    },
+    handleSizeChangeRsi(newPageSize){
+      this.paginationRsi.pageSize=newPageSize;
+      this.paginationRsi.currentPage=1;
+      this.getRsiTableData(newPageSize, 1);
+    },
+    handleCurrentChangeRsi(newCurrentPage){
+      this.paginationRsi.currentPage=newCurrentPage;
+      this.getRsiTableData(this.paginationRsi.pageSize,newCurrentPage);
+    },
+    handleSizeChangeRss(newPageSize){
+      this.paginationRss.pageSize=newPageSize;
+      this.paginationRss.currentPage=1;
+      this.getRssTableData(newPageSize, 1);
+    },
+    handleCurrentChangeRss(newCurrentPage){
+      this.paginationRss.currentPage=newCurrentPage;
+      this.getRssTableData(this.paginationRss.pageSize,newCurrentPage);
+    },
+    setLatencyIpv4Chart(data){ 
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "latencyIpv4Udp",
+            "latencyIpv4Tcp",
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          },
+          {
+            name: "tcp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 2,
+            },
+            label: {
+              show: true,
+            }
+          }
+        ],
+      };
+      this["latencyIpv4Chart"].setOption(option);
+    },
+    setLatencyIpv6Chart(data){ 
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "latencyIpv6Udp",
+            "latencyIpv6Tcp",
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          },
+          {
+            name: "tcp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 2,
+            },
+            label: {
+              show: true,
+            }
+          }
+        ],
+      };
+      this["latencyIpv6Chart"].setOption(option);
+    },
+    setAvailabilityIpv4Chart(data){
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "availabilityIpv4Udp",
+            "availabilityIpv4Tcp",
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          },
+          {
+            name: "tcp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 2,
+            },
+            label: {
+              show: true,
+            }
+          }
+        ],
+      };
+      this.testOption=option;
+      this["availabilityIpv4Chart"].setOption(option);
+    },
+    setAvailabilityIpv6Chart(data){
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "availabilityIpv6Udp",
+            "availabilityIpv6Tcp",
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          },
+          {
+            name: "tcp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 2,
+            },
+            label: {
+              show: true,
+            }
+          }
+        ],
+      };
+      this.testOption=option;
+      this["availabilityIpv6Chart"].setOption(option);
+    },
+    setCorrectnessChart(data){
+      
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "correctness"
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          }],
+      };
+      this.testOption=option;
+      this["correctnessChart"].setOption(option);
+    },
+    setPublicationLatencyChart(data){
+      
+      const option = {
+        grid:{
+          left: 200
+        },
+        xAxis: [
+          {
+            type: "category",
+          },
+        ],
+        yAxis: [
+          {
+            type: "value",
+          },
+        ],
+        dataset: {
+          dimensions: [
+            "timestamp",
+            "publicationLatency"
+          ],
+          source: data
+        },
+        series: [
+          {
+            name: "udp",
+            type: "line",
+            encode: {
+              x: 0,
+              y: 1,
+            },
+            label: {
+              show: true,
+            }
+          }],
+      };
+      this.testOption=option;
+      this["publicationLatencyChart"].setOption(option);
+    }
+
+
+  }
   
 };
 </script>
@@ -386,7 +828,7 @@ export default {
 }
 .tableContainer {
   margin: 0 auto;
-  width: 1057px;
+  width: 1207px;
  
 
 }

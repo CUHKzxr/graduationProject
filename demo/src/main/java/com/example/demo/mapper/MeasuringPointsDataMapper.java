@@ -3,7 +3,7 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
-import com.example.demo.bean.MeasuringPointsData;
+import com.example.demo.entity.MeasuringPointsData;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 

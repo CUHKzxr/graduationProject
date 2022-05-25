@@ -18,13 +18,13 @@ public class InputDataKafkaConsumer {
     @Qualifier("InputDataService")
     private InputDataService inputDataService;
 
-    @KafkaListener(topics = "rsiDataTest", id="01")
+    @KafkaListener(topics = "test", id="01")
     public void receiverProducerRecord(List<ConsumerRecord<String, String>> consumerRecords, Acknowledgment acknowledgment){
         System.out.println(consumerRecords.size());
         for(ConsumerRecord<String, String> consumerRecord : consumerRecords) {
             System.out.println("receiverProducerRecord key is " + JSONObject.toJSONString(consumerRecord.key()));
             System.out.println("receiverProducerRecord value is " + JSONObject.toJSONString(consumerRecord.value()));
-            inputDataService.saveData(consumerRecord.value());
+            //inputDataService.saveData(consumerRecord.value());
         }
         // 手动提交offset
         acknowledgment.acknowledge();

@@ -9,7 +9,7 @@
     <div class="tableContainer">
       <div >
         <el-table :data="measuringPointsData" 
-        border=true >
+        border:true >
           <el-table-column type="expand">
             <template slot-scope="props">
               <el-table :data="props.row.tasks">
@@ -89,8 +89,6 @@
 <script>
 import echarts from "echarts";
 import {
-  submitEdit,
-  submitDelete,
   getLatestMeasuringPointsData
 } from "@/api/measuringPoints";
 import {

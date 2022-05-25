@@ -13,7 +13,7 @@ spring:
       mapper-locations: classpath:/mapper/**.xml
 
   kafka:
-    bootstrap-servers: 172.20.74.125:9093
+    bootstrap-servers: 172.20.230.108:9093
     #bootstrap-servers: 172.20.48.175:2181
     producer: # 生产者
       retries: 3 # 设置大于0的值，则客户端会将发送失败的记录重新发送
@@ -47,3 +47,6 @@ spring:
       # MANUAL_IMMEDIATE
       ack-mode: manual_immediate
       type: batch  # 批量消费
+
+
+    # name: /data/zxr/log.txt

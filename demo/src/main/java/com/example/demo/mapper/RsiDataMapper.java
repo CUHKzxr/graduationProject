@@ -3,9 +3,9 @@ package com.example.demo.mapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
-import com.example.demo.bean.RsiData;
-import com.example.demo.bean.RsiDataWithIpv4;
-import com.example.demo.bean.RsiDataWithIpv6;
+import com.example.demo.entity.RsiData;
+import com.example.demo.entity.RsiDataWithIpv4;
+import com.example.demo.entity.RsiDataWithIpv6;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 

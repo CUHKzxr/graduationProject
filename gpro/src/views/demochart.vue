@@ -11,7 +11,7 @@
     <p class="title">根服务数据查询</p>
     <el-form ref="form" :model="searchConditions" label-width="80px" style="border:solid">
       <el-row>
-        <el-col span="8">
+        <el-col span:8>
           <div  > 
             <el-date-picker
               v-model="searchConditions.timestamprange"
@@ -23,8 +23,8 @@
             </el-date-picker>
           </div>
         </el-col>
-        <el-col span="16">
-          <div  >
+        <el-col span:16>
+          <div >
             
             可用节点：
             <!-- TODO: 添加全选框 -->
@@ -58,12 +58,12 @@
     <div class="container">
       
     </div>
-      <el-table :data="tabledata" height="650" width="150%">
+      <el-table :data="pagedTableData" height="650" width="150%">
         <el-table-column type="expand">
           
           <template slot-scope="props">
             <el-row>
-              <el-col span="8">
+              <el-col span:8>
                 <el-table :data="props.row.path_ipv4" width="400">
                   <el-table-column label="序号" width="170" type="index"></el-table-column>
                   <el-table-column
@@ -75,7 +75,7 @@
                   </el-table-column>
                 </el-table>
               </el-col>
-              <el-col span="8">
+              <el-col span:8>
                 <el-table :data="props.row.path_ipv6" width="400">
                   <el-table-column label="序号" width="170" type="index"></el-table-column>
                   <el-table-column
@@ -224,6 +224,15 @@
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+          @size-change="handleSizeChange" 
+          @current-change="handleCurrentChange" 
+          :page-size="pagination.pageSize" 
+          :current-page="pagination.currentPage"
+          :total="pagination.total"
+          :page-sizes="[10, 20, 50, 100]"  
+          layout="total, sizes, prev, pager, next, jumper">
+        </el-pagination>
   </div>
 </template>
 
@@ -257,7 +266,7 @@ export default {
       loopId: "",
       identifications: [],
       searchConditions:{
-        providers:["0"],
+        providers:["local"],
         checkedProviders:[],
         timestamprange:[],
         checkedNameList:[],
@@ -267,7 +276,12 @@ export default {
         isCheckAll1:false,
       },
       tabledata: [],
-     
+      pagedTableData:[],
+      pagination:{
+        currentPage:1,
+        pageSize:10,
+        total:0
+      },
     };
   },
   mounted() {
@@ -281,7 +295,7 @@ export default {
       this.setEchart2("chart2", this.timedata, this.chartdata);
       //this.demoSetEchart("chart1");
       //this.getLatestNdata(this.latestN)
-      if (!this.loopId ) {
+      if (!this.loopId && false ) {
         this.loop();
       }
     });
@@ -319,8 +333,9 @@ export default {
         }
         */
       }
-      
-      let test0=this.tabledata;
+      this.pagination.total=this.tabledata.length;
+      this.handleSizeChange(this.pagination.pageSize);
+      //let test0=this.tabledata;
     },
     async getAlternativeProviders(){
       // TODO
@@ -576,98 +591,10 @@ export default {
       }, this.loopTime);
       this.getAlternativeProviders();
     },
-
-    demoSetEchart(chartName) {
-      const option = {
-        grid:{
-          left: 200
-        },
-        xAxis: [
-          {
-            type: "time",
-            //scale:true
-            //boundaryGap: true
-            data: [
-              "2022-02-27T09:20:54Z",
-              "2022-02-27T09:25:50Z",
-              "2022-02-27T09:30:37Z",
-              "2022-02-27T09:35:38Z",
-              "2022-02-27T09:40:36Z",
-              "2022-02-27T09:45:04Z",
-              "2022-02-27T09:50:55Z",
-              "2022-02-27T09:55:56Z",
-              "2022-02-27T10:00:43Z",
-              "2022-02-27T10:05:46Z",
-              "2022-02-27T10:10:08Z",
-              "2022-02-27T10:15:23Z",
-              "2022-02-27T10:20:33Z",
-              "2022-02-27T10:25:44Z",
-              "2022-02-27T10:31:02Z",
-              "2022-02-27T10:35:55Z",
-            ],
-          },
-        ],
-        yAxis: [
-          {
-            type: "category",
-            //scale: true
-            /*
-            data:[
-              
-            ]
-            */
-          },
-        ],
-        visualMap: [
-          {
-            type: "piecewise",
-            dimensions: 3,
-            inRange: {
-              symbolSize: [5, 30],
-            },
-            orient: "horizontal",
-            min: 0,
-            max: 460,
-            maxOpen: true
-          },
-          {
-            type: "piecewise",
-            dimensions: 2,
-            inRange: {
-              color: ["green", "orange", "red"],
-            },
-            min: 0,
-            max: 460,
-            maxOpen: true
-          },
-        ],
-        dataset: {
-          dimensions: [
-            "time",
-            "identification",
-            "ipv4_latency_min",
-            "ipv6_latency_min",
-          ],
-          source:[]
-        },
-        series: [
-          {
-            name: "chartname",
-            type: "scatter",
-            encode: {
-              x: 0,
-              y: 1,
-            },
-          },
-        ],
-      };
-      this[chartName].setOption(option);
-    },
     handleCheckedProviders(val){
       this.searchConditions.isCheckAll0=val.length===this.searchConditions.providers.length;
       this.searchConditions.isIndeterminate0=this.searchConditions.checkedProviders.length>0
         && this.searchConditions.checkedProviders.length<this.searchConditions.providers.length;
-      
     },
     handleCheckedNameList(val){
       this.searchConditions.isCheckAll1=val.length===13;
@@ -681,8 +608,21 @@ export default {
     handleCheckAllChange1(val){
       this.searchConditions.checkedNameList=val?nameList:[];
       this.searchConditions.isIndeterminate1=false;
-    }
+    },
+    getTableData(pageSize, currentPage){
+      this.pagedTableData=this.tabledata.slice((currentPage-1)*pageSize,currentPage*pageSize);
+    },
+    handleSizeChange(newPageSize){
+      this.pagination.pageSize=newPageSize;
+      this.pagination.currentPage=1;
+      this.getTableData(newPageSize, 1);
+    },
+    handleCurrentChange(newCurrentPage){
+      this.pagination.currentPage=newCurrentPage;
+      this.getTableData(this.pagination.pageSize,newCurrentPage);
+    },
   },
+  
   
 };
 </script>

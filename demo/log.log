@@ -1,0 +1,33 @@
+2022-05-25 18:26:20.173  INFO 18864 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : Starting DnsAnalysisApplication using Java 1.8.0_221 on LAPTOP-OJ1HJG3S with PID 18864 (D:\Works\graduationProject\demo\target\classes started by zxr in D:\Works\graduationProject\demo)
+2022-05-25 18:26:20.189  INFO 18864 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : No active profile set, falling back to default profiles: default
+2022-05-25 18:26:20.262  INFO 18864 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2022-05-25 18:26:20.262  INFO 18864 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2022-05-25 18:26:22.329  INFO 18864 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-25 18:26:22.335  INFO 18864 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-25 18:26:22.335  INFO 18864 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.48]
+2022-05-25 18:26:22.454  INFO 18864 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-25 18:26:22.454  INFO 18864 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 2192 ms
+2022-05-25 18:26:22.626  INFO 18864 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2022-05-25 18:26:23.013  INFO 18864 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2022-05-25 18:26:25.313  INFO 18864 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2022-05-25 18:26:25.361  INFO 18864 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-25 18:26:25.373  INFO 18864 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : Started DnsAnalysisApplication in 5.681 seconds (JVM running for 6.718)
+2022-05-25 18:28:32.868  INFO 18864 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2022-05-25 18:28:32.868  INFO 18864 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2022-05-25 18:28:32.868  INFO 18864 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2022-05-25 19:06:11.138  INFO 18864 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closing ...
+2022-05-25 19:06:11.148  INFO 18864 --- [SpringApplicationShutdownHook] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} closed
+2022-05-25 19:06:16.421  INFO 14352 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : Starting DnsAnalysisApplication using Java 1.8.0_221 on LAPTOP-OJ1HJG3S with PID 14352 (D:\Works\graduationProject\demo\target\classes started by zxr in D:\Works\graduationProject\demo)
+2022-05-25 19:06:16.421  INFO 14352 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : No active profile set, falling back to default profiles: default
+2022-05-25 19:06:16.499  INFO 14352 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2022-05-25 19:06:16.499  INFO 14352 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2022-05-25 19:06:19.710  INFO 14352 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port(s): 8080 (http)
+2022-05-25 19:06:19.721  INFO 14352 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2022-05-25 19:06:19.721  INFO 14352 --- [restartedMain] org.apache.catalina.core.StandardEngine  : Starting Servlet engine: [Apache Tomcat/9.0.48]
+2022-05-25 19:06:19.832  INFO 14352 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2022-05-25 19:06:19.832  INFO 14352 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 3333 ms
+2022-05-25 19:06:19.943  INFO 14352 --- [restartedMain] c.a.d.s.b.a.DruidDataSourceAutoConfigure : Init DruidDataSource
+2022-05-25 19:06:20.246  INFO 14352 --- [restartedMain] com.alibaba.druid.pool.DruidDataSource   : {dataSource-1} inited
+2022-05-25 19:06:22.180  INFO 14352 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2022-05-25 19:06:22.222  INFO 14352 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2022-05-25 19:06:22.242  INFO 14352 --- [restartedMain] com.example.demo.DnsAnalysisApplication  : Started DnsAnalysisApplication in 6.344 seconds (JVM running for 7.436)

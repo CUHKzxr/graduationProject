@@ -4,9 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.example.demo.bean.RsiData;
-import com.example.demo.bean.RsiDataWithIpv4;
-import com.example.demo.bean.RsiDataWithIpv6;
+import com.example.demo.entity.RsiData;
+import com.example.demo.entity.RsiDataWithIpv4;
+import com.example.demo.entity.RsiDataWithIpv6;
 import com.example.demo.mapper.RsiDataMapper;
 import com.example.demo.mapper.RsiRouteDataIpv4Mapper;
 import com.example.demo.mapper.RsiRouteDataIpv6Mapper;
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-//@Transactional(propagation= Propagation.NESTED,isolation= Isolation.DEFAULT,readOnly = false)
+@Transactional(propagation= Propagation.NESTED,isolation= Isolation.READ_UNCOMMITTED,readOnly = true)
 @Service("ShowDataService")
 public class ShowDataServiceImp implements ShowDataService {
 
@@ -199,16 +199,8 @@ public class ShowDataServiceImp implements ShowDataService {
             if (providers.size()==0) {
                 providers.add(InputDataServiceImp.defaultProvider);
             }
-            /*
-            try {
-                Demo.parseDate(startTimeStamp);
-                Demo.parseDate(endTimeStamp);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-            */
 
+            // TODO: 考虑把遍历provider改到条件构造器里
             List<RsiDataWithIpv4> rsiDataListIpv4 = new ArrayList<>();
             List<RsiDataWithIpv6> rsiDataListIpv6 = new ArrayList<>();
             if (startTimeStamp!=null && endTimeStamp!=null) {

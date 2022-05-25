@@ -11,6 +11,9 @@ export function parseIpv4String(number){
   return ip.join(".");			    
 }
 export function parseIpv6String(bytes){
+  if(bytes=="* * *" || bytes=="* * * "){
+    return '* * *';
+  }
   var r="";
   for (var i = 0; i <14; i+=2) {
     r+=bytes[i].toString(16)+bytes[i+1].toString(16)+":";

@@ -1,4 +1,4 @@
-package com.example.demo.bean;
+package com.example.demo.entity;
 
 public class MeasuringPointsData {
 
@@ -113,16 +113,16 @@ public class MeasuringPointsData {
 
     @Override
     public boolean equals(Object obj) {
-        if(this == obj){
+        if (this == obj) {
             return true;
         }
 
-        if(obj == null || getClass() != obj.getClass()){
+        if (obj == null || getClass() != obj.getClass()) {
             return false;
         }
-        MeasuringPointsData measuringPointsData=(MeasuringPointsData) obj;
+        MeasuringPointsData measuringPointsData = (MeasuringPointsData) obj;
         return this.identification.equals(measuringPointsData.getIdentification())
-                &&(this.id == measuringPointsData.getId());
+                && (this.id == measuringPointsData.getId());
 
     }
 }

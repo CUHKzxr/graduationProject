@@ -2,13 +2,18 @@ package com.example.demo.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.example.demo.bean.RsiData;
-import com.example.demo.bean.RsiRouteDataIpv4;
-import com.example.demo.bean.RsiRouteDataIpv6;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.example.demo.entity.MeasuringPoint;
+import com.example.demo.entity.RsiData;
+import com.example.demo.entity.RsiRouteDataIpv4;
+import com.example.demo.entity.RsiRouteDataIpv6;
+import com.example.demo.mapper.MeasuringPointsMapper;
 import com.example.demo.mapper.RsiDataMapper;
 import com.example.demo.mapper.RsiRouteDataIpv4Mapper;
 import com.example.demo.mapper.RsiRouteDataIpv6Mapper;
 import com.example.demo.utils.IpUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -18,12 +23,18 @@ import org.springframework.transaction.annotation.Transactional;
 import java.net.UnknownHostException;
 
 
-@Transactional(propagation = Propagation.NESTED, isolation = Isolation.DEFAULT, readOnly = false)
+
 @Service("InputDataService")
 public class InputDataServiceImp implements InputDataService {
 
     public static final String defaultProvider = "local";
     private static final int maxJumps = 32;
+    private final Logger logger= LoggerFactory.getLogger(this.getClass());
+
+
+    @Autowired
+    private MeasuringPointsMapper measuringPointsMapper;
+
     @Autowired
     private RsiDataMapper rsiDataMapper;
     @Autowired
@@ -31,32 +42,44 @@ public class InputDataServiceImp implements InputDataService {
     @Autowired
     private RsiRouteDataIpv6Mapper rsiRouteDataIpv6Mapper;
 
+    @Transactional(propagation = Propagation.NESTED, isolation = Isolation.READ_UNCOMMITTED, readOnly = false)
     @Override
     public int saveData(String dataString) {
+        if(dataString==null || dataString.equals("") || dataString.length()<=1){
+            logger.warn("Empty FIle!");
+            return 0;
+        }
         JSONObject rsiData13 = JSON.parseObject(dataString);
         String timestamp = rsiData13.getString("TimeStamp");
-        String provider = rsiData13.getString("Provider");
-        if (provider == null || provider.equals("")) {
-            provider = defaultProvider;
+        JSONObject rootA=rsiData13.getJSONObject("A");
+        String ipv4=rootA.getString("SourceIP_ipv4");
+        String ipv6=rootA.getString("SourceIP_ipv6");
+        String provider=checkProvider(rsiData13);
+        if(provider==null){
+            logger.warn("Unknown Provider:Timestamp:"+timestamp+"  ipv4:"+ipv4+"  ipv6:"+ipv6);
+            return 0;
         }
+        int r=0;
         for (int i = 0; i < 13; i++) {
             String name = "" + (char) ('A' + i);
             JSONObject rsiData = rsiData13.getJSONObject(name);
-            int r = saveRsiData(rsiData, timestamp, provider, (char) ('A' + i));
-            if (r != 0) {
-                return r;
-            }
+            r+= saveRsiData(rsiData, timestamp, provider, (char) ('A' + i));
         }
-
-        return 0;
+        if(r!=13){
+            logger.error("Input data error!Should get 13 Rsi but not "+r+".  "+
+                    "Provider:"+provider+" Timestamp:"+timestamp);
+        }
+        return r;
     }
 
 
     private int saveRsiData(JSONObject jsonObject, String timestamp, String provider, char name) {
         //检查数据
+        /*
         if (!checkRsiData(jsonObject)) {
             return -1;
         }
+        */
         try {
             int r = 0;
 
@@ -90,13 +113,13 @@ public class InputDataServiceImp implements InputDataService {
 
             RsiData rsiData = new RsiData(timestamp, provider, name, identification, latency,
                     pathCount, status, sourceIpv4, sourceIpv6, referLatency, correctness, publicationLatency);
-            rsiDataMapper.insert(rsiData);
+            r+=rsiDataMapper.insert(rsiData);
 
             //List<RsiRouteDataIpv4> rsiRouteDataIpv4List;
             //List<RsiRouteDataIpv6> rsiRouteDataIpv6List;
             JSONObject pathIpv4Json = jsonObject.getJSONObject("Path_ipv4");
             JSONObject pathIpv6Json = jsonObject.getJSONObject("Path_ipv6");
-            if (pathIpv4Json == null) {
+            if (pathIpv4Json == null || jsonObject.getIntValue("Path_count_ipv4")==-1) {
                 //rsiRouteDataIpv4List = null;
                 //rsiRouteDataIpv4Mapper.insert(new RsiRouteDataIpv4(timestamp, provider, name, identification,0, 0));
             } else {
@@ -111,7 +134,7 @@ public class InputDataServiceImp implements InputDataService {
                     address = pathIpv4Json.getString("Router" + i);
                 }
             }
-            if (pathIpv6Json == null) {
+            if (pathIpv6Json == null|| jsonObject.getIntValue("Path_count_ipv6")==-1) {
                 //rsiRouteDataIpv6List = null;
                 //rsiRouteDataIpv6Mapper.insert(new RsiRouteDataIpv6(timestamp, provider, name, identification,0, null));
             } else {
@@ -145,19 +168,38 @@ public class InputDataServiceImp implements InputDataService {
             return Integer.parseInt(a);
         }
     }
-
     /**
-     * 检查单条rsi数据
+     * 检查单条rsi数据的提供者
      *
-     * @param json
+     * @param rsiData13
      * @return true如果合格，false如果出错
      */
-    private boolean checkRsiData(JSONObject json) {
-        /*
-        TODO
-         */
-        return true;
+    public String checkProvider(JSONObject rsiData13){
+        try {
+            JSONObject rootA=rsiData13.getJSONObject("A");
+            int ipv4=IpUtils.parseIntIpv4(rootA.getString("SourceIP_ipv4"));
+            byte[] ipv6=IpUtils.parseIpv6(rootA.getString("SourceIP_ipv6"));
+            MeasuringPoint measuringPoint=measuringPointsMapper.selectOne(new QueryWrapper<MeasuringPoint>()
+                    .eq("ipv4_address",ipv4)
+                    //.eq("ipv6_address",ipv6)
+            );
+            if(measuringPoint!=null){
+                return measuringPoint.getIdentification();
+            }
+            return null;
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 
+
+    /*
+    private boolean checkRsiData(JSONObject json) {
+        //todo
+        return true;
+    }
+*/
 
 }

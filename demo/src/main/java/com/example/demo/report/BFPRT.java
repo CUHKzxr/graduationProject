@@ -1,17 +1,37 @@
 package com.example.demo.report;
 
-public class SelectKth {
+public class BFPRT implements FindMedian{
 
 
+    @Override
+    public int getMedian(int[] list, int leftBorder, int rightBorder) {
+        int size=rightBorder-leftBorder+1;
+        if (size % 2 != 0) {
+            return  list[BFPRT.BFPRT(list, 0, size - 1, 1 + size / 2)];
+        } else {
+            int a=list[BFPRT.BFPRT(list, 0, size - 1, size / 2)];
+            if(a==INT_MAX){
+                return INT_MAX;
+            }
+            int b=list[BFPRT.BFPRT(list, 0, size - 1, 1 + size / 2)];
+            if(b==INT_MAX){
+                return INT_MAX;
+            }
+            return  (a+b) / 2;
+        }
+    }
+    //返回偏移量
     public static int BFPRT(int[] list,int leftBorder,int rightBorder, int k){
         int p = FindMid(list, leftBorder, rightBorder);    //寻找中位数的中位数
         int i = Partion(list, leftBorder, rightBorder, p);
 
         int m = i - leftBorder + 1;
-        if(m == k) return list[i];
+        //if(m == k) return list[i];
+        if(m == k) return i;
         if(m > k)  return BFPRT(list, leftBorder, i - 1, k);
         return BFPRT(list, i + 1, rightBorder, k - m);
     }
+    //返回偏移量
     private static int Partion(int list[], int leftBorder, int rightBorder, int pivotPosition)
     {
         swap(list,pivotPosition, leftBorder);
@@ -30,10 +50,16 @@ public class SelectKth {
         list[i] = pivot;
         return i;
     }
-
+    //返回偏移量
     private static int FindMid(int list[], int leftBorder, int rightBorder)
     {
         if(leftBorder == rightBorder) return leftBorder;
+        //--------------------
+        if(rightBorder-leftBorder<=25){
+            InsertSort(list,leftBorder,rightBorder);
+            return (leftBorder+rightBorder)/2;
+        }
+        //-------------------------
         int i = 0;
         int n = 0;
         for(i = leftBorder; i < rightBorder - 5; i += 5)
@@ -78,4 +104,6 @@ public class SelectKth {
         list[p1]=list[p2];
         list[p2]=temp;
     }
+
+
 }

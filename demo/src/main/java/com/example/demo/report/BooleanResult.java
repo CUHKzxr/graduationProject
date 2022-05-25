@@ -1,15 +1,15 @@
 package com.example.demo.report;
 
 public class BooleanResult {
-    private final boolean value;
+    private final int value;
     private final int measurements;
 
     public BooleanResult(boolean value, int measurements) {
-        this.value = value;
+        this.value = value?1:0;
         this.measurements = measurements;
     }
 
-    public boolean isValue() {
+    public int getValue() {
         return value;
     }
 

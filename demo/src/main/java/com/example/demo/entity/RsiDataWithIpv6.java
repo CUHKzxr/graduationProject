@@ -1,7 +1,4 @@
-package com.example.demo.bean;
-
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
+package com.example.demo.entity;
 
 public class RsiDataWithIpv6 {
     private String timestamp;
